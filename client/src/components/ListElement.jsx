@@ -1,10 +1,69 @@
 import React from 'react';
+import axios from 'axios';
 
-const ListElement = () =>
-  <span>
-    <div>Evelyn</div>
-    <img src='https://ca.slack-edge.com/T2SV1LBC6-URC6Z49K9-0731cf8087a9-512'></img>
-  </span>
+export default class ListElement extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      updateName: false,
+      studentId: 0,
+      studentName: this.props.studentName,
+    };
 
+    this.updateStudent = this.updateStudent.bind(this);
+    this.clickHandler = this.clickHandler.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
+    this.submitHandler = this.submitHandler.bind(this);
+  }
 
-export default ListElement
+  updateStudent(id) {
+    axios
+      .put(`/api/students/${id}`, { name: this.state.studentName })
+      .then(() => this.props.getStudents())
+      .catch((err) => console.error(err));
+  }
+
+  clickHandler(id) {
+    this.setState({
+      updateName: true,
+      studentId: id,
+    });
+  }
+
+  changeHandler(e) {
+    this.setState({
+      studentName: e.target.value,
+    });
+  }
+
+  submitHandler(e) {
+    e.preventDefault();
+
+    this.setState(
+      {
+        updateName: false,
+      },
+      () => this.updateStudent(this.state.studentId)
+    );
+  }
+
+  render() {
+    return this.state.updateName ? (
+      <span>
+        <input
+          value={this.state.studentName}
+          onChange={this.changeHandler}
+        ></input>
+        <button onClick={this.submitHandler}>Change Name</button>
+        <img src={this.props.student.imgurl} />
+      </span>
+    ) : (
+      <span>
+        <div onClick={() => this.clickHandler(this.props.student._id)}>
+          {this.props.student.name}
+        </div>
+        <img src={this.props.student.imgurl} />
+      </span>
+    );
+  }
+}

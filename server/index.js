@@ -14,4 +14,9 @@ server.use(bodyparser.urlencoded({ extended: true }));
 server.use(express.static(path.join(__dirname, '../client/dist')));
 server.use('/api', router);
 
-server.listen(port, () => console.log(`listening on ${port}`))
+/**
+ * if no router
+ * server.get('/api/students', controller.students.get)
+ */
+
+server.listen(port, () => console.log(`listening on ${port}`));
